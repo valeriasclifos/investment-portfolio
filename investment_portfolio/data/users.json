@@ -2,5 +2,9 @@
   "valeria": {
     "password_hash": "249563f8343e0e8b389fa7c6ced6447df3d67227596f518df3a92e74ac27e613",
     "balance": 20.0
+  },
+  "roxanica": {
+    "password_hash": "0a466130d58b86c72c9e949006df0ff568bd46a8327b8d6c48f1ab7c9e18d960",
+    "balance": 309.73004150390625
   }
 }
