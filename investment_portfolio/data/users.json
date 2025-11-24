@@ -6,5 +6,9 @@
   "roxanica": {
     "password_hash": "0a466130d58b86c72c9e949006df0ff568bd46a8327b8d6c48f1ab7c9e18d960",
     "balance": 309.73004150390625
+  },
+  "celia": {
+    "password_hash": "6ae9e4d22c4670b9140fc378214b3274fb3f64d16058717f974515000680b24c",
+    "balance": 19306.455017089844
   }
 }

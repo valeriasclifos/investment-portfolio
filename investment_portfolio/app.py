@@ -12,18 +12,14 @@ from services.portfolio_services import (
     get_portfolio_value,
 )
 
-
 # ---------- Config pagină ----------
-
 st.set_page_config(
     page_title="Portofoliu Investiții",
     page_icon="💸",
     layout="wide",
 )
 
-
 # ---------- Helperi pentru sesiune ----------
-
 if "username" not in st.session_state:
     st.session_state.username = None
 
@@ -35,12 +31,9 @@ def require_login():
 
 
 # ---------- Header ----------
-
 st.title("💸 Aplicație de gestionare a portofoliului de investiții")
 
-
 # ---------- SECȚIUNE AUTENTIFICARE ----------
-
 if st.session_state.username is None:
     tab_login, tab_register = st.tabs(["🔐 Login", "🆕 Register"])
 
@@ -92,25 +85,19 @@ else:
             st.session_state.username = None
             st.rerun()
 
-
 # ---------- Dacă nu e logat, ne oprim aici ----------
-
 if st.session_state.username is None:
     st.info("Autentifică-te sau creează un cont nou pentru a continua.")
     st.stop()
 
-
 username = st.session_state.username
 
 # ---------- TAB-URI PRINCIPALE ----------
-
 tab_cont, tab_companii, tab_portofoliu, tab_istoric = st.tabs(
     ["💼 Cont", "🏢 Companii", "📈 Portofoliu", "📜 Istoric"]
 )
 
-
-# ---------- TAB CONT: adăugare bani ----------
-
+# ---------- TAB CONT ----------
 with tab_cont:
     st.subheader("💼 Gestionare cont")
 
@@ -118,25 +105,19 @@ with tab_cont:
     st.metric(label="Sold curent", value=f"{current_balance:.2f}")
 
     st.markdown("---")
-    st.write("### Adăugare bani în aplicație")
+    st.write("### Adăugare bani")
 
-    amount = st.number_input(
-        "Sumă de adăugat",
-        min_value=0.0,
-        step=10.0,
-        format="%.2f",
-    )
+    amount = st.number_input("Sumă de adăugat", min_value=0.0, step=10.0, format="%.2f")
 
     if st.button("Adaugă bani"):
         ok, msg, new_balance = add_money(username, amount)
         if ok:
             st.success(f"{msg} Sold nou: {new_balance:.2f}")
+            st.rerun()  # 🔥 REFRESH INSTANT
         else:
             st.error(msg)
 
-
-# ---------- TAB COMPANII: listă + cumpărare ----------
-
+# ---------- TAB COMPANII ----------
 with tab_companii:
     st.subheader("🏢 Lista de companii și prețul curent")
 
@@ -149,48 +130,45 @@ with tab_companii:
     symbols = [row["symbol"] for row in companies]
     if symbols:
         symbol_buy = st.selectbox("Alege simbol", symbols)
-        qty_buy = st.number_input("Cantitate de cumpărat", min_value=1, step=1)
+        qty_buy = st.number_input("Cantitate", min_value=1, step=1)
 
         if st.button("Cumpără"):
             ok, msg = buy_stock(username, symbol_buy, int(qty_buy))
             if ok:
                 st.success(msg)
+                st.rerun()  # 🔥 REFRESH INSTANT
             else:
                 st.error(msg)
-    else:
-        st.info("Nu există companii disponibile (sau API-ul nu a răspuns).")
 
-
-# ---------- TAB PORTOFOLIU: afișare + vânzare ----------
-
+# ---------- TAB PORTOFOLIU ----------
 with tab_portofoliu:
     st.subheader("📈 Portofoliul tău")
 
     user_portfolio = get_user_portfolio(username)
 
     if not user_portfolio:
-        st.info("Nu ai încă acțiuni în portofoliu.")
+        st.info("Nu ai încă acțiuni.")
     else:
-        # Construim un tabel frumos cu profit etc.
         rows = []
         for symbol, info in user_portfolio.items():
             quantity = info["quantity"]
             avg_buy_price = info["avg_buy_price"]
             current_price = get_price(symbol)
-            current_value = None
-            profit = None
 
             if current_price is not None:
                 current_value = current_price * quantity
                 profit = (current_price - avg_buy_price) * quantity
+            else:
+                current_value = "N/A"
+                profit = "N/A"
 
             rows.append({
                 "Symbol": symbol,
                 "Cantitate": quantity,
                 "Preț mediu cumpărare": round(avg_buy_price, 2),
-                "Preț curent": round(current_price, 2) if current_price is not None else "N/A",
-                "Valoare curentă": round(current_value, 2) if current_value is not None else "N/A",
-                "Profit/Pierdere": round(profit, 2) if profit is not None else "N/A",
+                "Preț curent": round(current_price, 2) if current_price else "N/A",
+                "Valoare curentă": round(current_value, 2) if type(current_value) is not str else "N/A",
+                "Profit/Pierdere": round(profit, 2) if type(profit) is not str else "N/A",
             })
 
         st.table(rows)
@@ -199,37 +177,31 @@ with tab_portofoliu:
         st.write("### Vinde acțiuni")
 
         symbol_options = list(user_portfolio.keys())
-        symbol_sell = st.selectbox("Alege simbol de vândut", symbol_options)
+        symbol_sell = st.selectbox("Alege simbol", symbol_options)
         max_qty = user_portfolio[symbol_sell]["quantity"]
+
         qty_sell = st.number_input(
-            "Cantitate de vândut",
-            min_value=1,
-            max_value=int(max_qty),
-            step=1,
+            "Cantitate", min_value=1, max_value=int(max_qty), step=1
         )
 
         if st.button("Vinde"):
             ok, msg = sell_stock(username, symbol_sell, int(qty_sell))
             if ok:
                 st.success(msg)
+                st.rerun()  # 🔥 REFRESH INSTANT
             else:
                 st.error(msg)
 
-
-# ---------- TAB ISTORIC: tranzacții ----------
-
+# ---------- TAB ISTORIC ----------
 with tab_istoric:
     st.subheader("📜 Istoricul tranzacțiilor")
 
     transactions = get_user_transactions(username)
 
     if not transactions:
-        st.info("Nu există tranzacții încă.")
+        st.info("Nu există tranzacții.")
     else:
-        # eventual ordonăm descrescător după timp
         transactions_sorted = sorted(
-            transactions,
-            key=lambda tx: tx.get("timestamp", ""),
-            reverse=True,
+            transactions, key=lambda tx: tx.get("timestamp", ""), reverse=True
         )
         st.table(transactions_sorted)
