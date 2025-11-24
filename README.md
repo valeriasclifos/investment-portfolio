@@ -21,7 +21,7 @@ Permite înregistrarea utilizatorilor, logare, gestionarea portofoliului, vizion
 investment_portfolio/
 ├── backend/
 │   ├── manage.py
-│   ├── requirements.txt
+├── requirements.txt
 │   ├── app.log
 │   ├── data/
 │   │   └── users.json
