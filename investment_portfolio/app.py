@@ -1,9 +1,17 @@
 import streamlit as st
-import yfinance as yf
 
-# 🔗 Importăm serviciile pe care le-ai definit în fișierele separate
+# Importăm funcțiile care folosesc API-ul cu cheie (Alpha Vantage) din services/api_client.py
+from services.api_client import (
+    SYMBOLS,
+    get_company_name,
+    get_price,
+    get_company_info,
+    list_companies_with_price,
+)
+
+# Importăm serviciile de autentificare și portofoliu
 from services.auth_services import register, login
-from services.portfolio_services import (
+from services.portfolio_services import (   # <- atenție: portfolio_service, nu portfolio_services
     get_user_balance,
     add_money,
     buy_stock,
@@ -12,53 +20,6 @@ from services.portfolio_services import (
     get_user_transactions,
     get_portfolio_value,
 )
-
-# 10 companii populare
-SYMBOLS = [
-    "AAPL", "GOOGL", "TSLA", "AMZN", "NVDA",
-    "MSFT", "META", "NFLX", "ORCL", "INTC"
-]
-
-def get_company_name(symbol: str) -> str:
-    """
-    Ia numele companiei din yfinance.
-    """
-    try:
-        ticker = yf.Ticker(symbol)
-        info = ticker.info
-        name = info.get("longName") or info.get("shortName") or symbol
-        return name
-    except Exception:
-        return symbol
-
-def get_price(symbol: str) -> float | None:
-    """
-    Ia prețul curent al acțiunii.
-    """
-    try:
-        ticker = yf.Ticker(symbol)
-        price = ticker.history(period="1d")["Close"].iloc[-1]
-        return float(price)
-    except Exception:
-        return None
-
-def get_company_info(symbol: str) -> dict:
-    """
-    Returnează:
-        {
-            "symbol": ...,
-            "name": ...,
-            "price": ...
-        }
-    """
-    name = get_company_name(symbol)
-    price = get_price(symbol)
-
-    return {
-        "symbol": symbol,
-        "name": name,
-        "price": price if price is not None else "N/A"
-    }
 
 # ---------- Config pagină ----------
 st.set_page_config(
@@ -250,14 +211,3 @@ with tab_istoric:
             transactions, key=lambda tx: tx.get("timestamp", ""), reverse=True
         )
         st.table(transactions_sorted)
-
-
-# ---------- FUNCȚIE LIPSĂ DIN CONFLICT ----------
-def list_companies_with_price() -> list[dict]:
-    """
-    Returnează lista completă cu nume + preț pentru 10 companii.
-    """
-    result = []
-    for symbol in SYMBOLS:
-        result.append(get_company_info(symbol))
-    return result
