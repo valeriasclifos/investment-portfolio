@@ -1,6 +1,18 @@
 import streamlit as st
 import yfinance as yf
 
+# 🔗 Importăm serviciile pe care le-ai definit în fișierele separate
+from services.auth_services import register, login
+from services.portfolio_services import (
+    get_user_balance,
+    add_money,
+    buy_stock,
+    get_user_portfolio,
+    sell_stock,
+    get_user_transactions,
+    get_portfolio_value,
+)
+
 # 10 companii populare
 SYMBOLS = [
     "AAPL", "GOOGL", "TSLA", "AMZN", "NVDA",
@@ -48,7 +60,6 @@ def get_company_info(symbol: str) -> dict:
         "price": price if price is not None else "N/A"
     }
 
-
 # ---------- Config pagină ----------
 st.set_page_config(
     page_title="Portofoliu Investiții",
@@ -59,7 +70,6 @@ st.set_page_config(
 # ---------- Helperi pentru sesiune ----------
 if "username" not in st.session_state:
     st.session_state.username = None
-
 
 # ---------- Header ----------
 st.title("💸 Aplicație de gestionare a portofoliului de investiții")
@@ -152,7 +162,11 @@ with tab_cont:
 with tab_companii:
     st.subheader("🏢 Lista de companii și prețul curent")
 
-    companies = list_companies_with_price()
+    companies = []
+
+    for symbol in SYMBOLS:
+        companies.append(get_company_info(symbol))
+
     st.table(companies)
 
     st.markdown("---")
@@ -197,9 +211,9 @@ with tab_portofoliu:
                 "Symbol": symbol,
                 "Cantitate": quantity,
                 "Preț mediu cumpărare": round(avg_buy_price, 2),
-                "Preț curent": round(current_price, 2) if current_price else "N/A",
-                "Valoare curentă": round(current_value, 2) if type(current_value) is not str else "N/A",
-                "Profit/Pierdere": round(profit, 2) if type(profit) is not str else "N/A",
+                "Preț curent": round(current_price, 2) if current_price is not None else "N/A",
+                "Valoare curentă": round(current_value, 2) if isinstance(current_value, (int, float)) else "N/A",
+                "Profit/Pierdere": round(profit, 2) if isinstance(profit, (int, float)) else "N/A",
             })
 
         st.table(rows)
