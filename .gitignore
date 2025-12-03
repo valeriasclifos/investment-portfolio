@@ -1,0 +1,14 @@
+# ignoră directoarele cu date generate de aplicație
+data/
+investment_portfolio/data/
+
+# ignoră fișiere interne Python
+__pycache__/
+*.pyc
+
+# ignoră fișiere log
+*.log
+
+# ignoră medii virtuale
+.venv/
+venv/
