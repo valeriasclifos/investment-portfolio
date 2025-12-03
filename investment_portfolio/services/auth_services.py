@@ -2,7 +2,11 @@ import hashlib
 from pathlib import Path
 from .storage_services import load_json, save_json
 
-DATA_PATH = Path("data/users.json")
+# înainte aveai: DATA_PATH = Path("data/users.json")
+# acum facem să fie identic cu ce folosește portfolio_service
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "users.json"
+
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
