@@ -21,37 +21,29 @@ def get_company_name(symbol: str) -> str:
     except Exception:
         return symbol
 
-
-def get_price(symbol: str) -> float | None:
-    """
-    Ia prețul curent al acțiunii.
-    """
+def get_price(symbol: str):
     try:
         ticker = yf.Ticker(symbol)
         price = ticker.history(period="1d")["Close"].iloc[-1]
+
+        if price is None:
+            return "N/A"
+
         return float(price)
+
     except Exception:
-        return None
+        return "N/A"
 
 
 def get_company_info(symbol: str) -> dict:
-    """
-    Returnează:
-        {
-            "symbol": ...,
-            "name": ...,
-            "price": ...
-        }
-    """
     name = get_company_name(symbol)
     price = get_price(symbol)
 
     return {
         "symbol": symbol,
         "name": name,
-        "price": price if price is not None else "N/A"
+        "price": price if price != "N/A" else "N/A"
     }
-
 
 def list_companies_with_price() -> list[dict]:
     """
