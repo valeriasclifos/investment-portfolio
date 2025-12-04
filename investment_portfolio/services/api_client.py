@@ -1,3 +1,5 @@
+import time
+import streamlit as st
 import requests
 
 # 10 companii populare
@@ -7,7 +9,8 @@ SYMBOLS = [
 ]
 
 # ⬇️ AICI PUI CHEIA TA REALĂ (cea cu care ai testat în browser)
-API_KEY = "K5QZI11AF8O6GDIT"
+#API_KEY = "K5QZI11AF8O6GDIT"
+API_KEY = "ZIWXO55TQG7SIBSH"
 BASE_URL = "https://www.alphavantage.co/query"
 
 
@@ -42,22 +45,44 @@ def _get_global_quote(symbol: str) -> dict | None:
 
 
 def get_price(symbol: str):
-    """
-    Returnează prețul curent (float) sau None dacă nu se poate obține.
-    """
-    quote = _get_global_quote(symbol)
-    if not quote:
-        return None
+    # inițializăm cache-ul dacă nu există
+    if "price_cache" not in st.session_state:
+        st.session_state.price_cache = {}
 
-    price_str = quote.get("05. price")
-    if not price_str:
-        print("Missing '05. price' in quote:", quote)
-        return None
+    cache = st.session_state.price_cache
+
+    # dacă avem preț în cache și nu a expirat (5 minute = 300 secunde)
+    if symbol in cache:
+        saved_price, timestamp = cache[symbol]
+        if time.time() - timestamp < 300:  # 5 minute
+            return saved_price
+
+    # ——— altfel, apelăm API-ul ———
+    params = {
+        "function": "GLOBAL_QUOTE",
+        "symbol": symbol,
+        "apikey": API_KEY,
+    }
 
     try:
-        return float(price_str)
-    except ValueError:
-        print("Could not convert price to float:", price_str)
+        response = requests.get(BASE_URL, params=params).json()
+
+        if "Note" in response:
+            print("AlphaVantage error:", response)
+            return None
+
+        price_str = response["Global Quote"].get("05. price")
+        if not price_str:
+            return None
+
+        price = float(price_str)
+
+        # salvăm în cache
+        cache[symbol] = (price, time.time())
+
+        return price
+
+    except Exception:
         return None
 
 

@@ -31,9 +31,18 @@ st.set_page_config(
 # ---------- Helperi pentru sesiune ----------
 if "username" not in st.session_state:
     st.session_state.username = None
-
+if "last_message" not in st.session_state:
+    st.session_state.last_message = None
+if "last_message_type" not in st.session_state:
+    st.session_state.last_message_type = None
 # ---------- Header ----------
 st.title("💸 Aplicație de gestionare a portofoliului de investiții")
+# Afișăm ultimul mesaj global (ex: "Ai cumpărat..." / "Ai vândut...")
+if st.session_state.last_message:
+    if st.session_state.last_message_type == "success":
+        st.success(st.session_state.last_message)
+    elif st.session_state.last_message_type == "error":
+        st.error(st.session_state.last_message)
 
 # ---------- SECȚIUNE AUTENTIFICARE ----------
 if st.session_state.username is None:
@@ -141,10 +150,13 @@ with tab_companii:
         if st.button("Cumpără"):
             ok, msg = buy_stock(username, symbol_buy, int(qty_buy))
             if ok:
-                st.success(msg)
-                st.rerun()  # 🔥 REFRESH INSTANT
+                st.session_state.last_message = msg
+                st.session_state.last_message_type = "success"
+                st.rerun()
             else:
-                st.error(msg)
+                st.session_state.last_message = msg
+                st.session_state.last_message_type = "error"
+                st.rerun()
 
 # ---------- TAB PORTOFOLIU ----------
 with tab_portofoliu:
@@ -193,10 +205,13 @@ with tab_portofoliu:
         if st.button("Vinde"):
             ok, msg = sell_stock(username, symbol_sell, int(qty_sell))
             if ok:
-                st.success(msg)
-                st.rerun()  # 🔥 REFRESH INSTANT
+                st.session_state.last_message = msg
+                st.session_state.last_message_type = "success"
+                st.rerun()
             else:
-                st.error(msg)
+                st.session_state.last_message = msg
+                st.session_state.last_message_type = "error"
+                st.rerun()
 
 # ---------- TAB ISTORIC ----------
 with tab_istoric:
