@@ -1,5 +1,10 @@
-class User:
-    def __init__(self, username, password_hash, balance=0.0):
-        self.username = username
-        self.password_hash = password_hash
-        self.balance = balance
+from sqlalchemy import Column, String, Float
+from services.database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    username = Column(String, primary_key=True, index=True, nullable=False)
+    password_hash = Column(String, nullable=False)
+    balance = Column(Float, default=0.0)
