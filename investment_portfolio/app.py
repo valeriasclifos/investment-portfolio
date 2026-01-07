@@ -1,6 +1,7 @@
 import streamlit as st
 
-# Importăm funcțiile care folosesc API-ul cu cheie (Alpha Vantage) din services/api_client.py
+from services.database import init_db   # 👈 acum luăm init_db din services.database
+
 from services.api_client import (
     SYMBOLS,
     get_company_name,
@@ -8,10 +9,8 @@ from services.api_client import (
     get_company_info,
     list_companies_with_price,
 )
-
-# Importăm serviciile de autentificare și portofoliu
 from services.auth_services import register, login
-from services.portfolio_services import (   # <- atenție: portfolio_service, nu portfolio_services
+from services.portfolio_services import (
     get_user_balance,
     add_money,
     buy_stock,
@@ -20,6 +19,9 @@ from services.portfolio_services import (   # <- atenție: portfolio_service, nu
     get_user_transactions,
     get_portfolio_value,
 )
+
+# creăm tabelele în SQLite (dacă nu există)
+init_db()
 
 # ---------- Config pagină ----------
 st.set_page_config(
