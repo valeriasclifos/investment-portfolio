@@ -6,7 +6,9 @@ Utilizatorii își pot crea un cont, pot adăuga bani, pot cumpăra și vinde ac
 ---
 
 ## ⭐ Caracteristici principale
-
+### Rularea aplicatiei
+- Trebuie instalat inainte sqlalchemy==2.0.44 cu comanda "pip install sqlalchemy==2.0.44" in terminal pentru a accesa baza de date
+- Trebuie instalat si streamlit cu comanda in terminal "pip install streamlit" pentru ca fara aplicatia nu va porni deloc, interfata fiind realizata cu streamlit
 ### 🔐 Autentificare & cont
 - Creare cont nou
 - Parole securizate (hash SHA-256)
