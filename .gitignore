@@ -12,3 +12,6 @@ __pycache__/
 # ignoră medii virtuale
 .venv/
 venv/
+#ignora db
+*.db
+investment.db
