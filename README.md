@@ -6,9 +6,14 @@ Utilizatorii își pot crea un cont, pot adăuga bani, pot cumpăra și vinde ac
 ---
 
 ## ⭐ Caracteristici principale
+
 ### Rularea aplicatiei
-- Trebuie instalat inainte sqlalchemy==2.0.44 cu comanda "pip install sqlalchemy==2.0.44" in terminal pentru a accesa baza de date
+**Cerințe preliminare -> Python 3.10+ instalat (verificare: python --version)**
+- Trebuie instalat inainte sqlalchemy==2.0.44 cu comanda "pip install sqlalchemy==2.0.44" in terminal
 - Trebuie instalat si streamlit cu comanda in terminal "pip install streamlit" pentru ca fara aplicatia nu va porni deloc, interfata fiind realizata cu streamlit
+- După ce ai clonat repository-ul, intră în folderul principal al aplicației cu comanda "cd investment_portfolio"
+- Rulează aplicația Streamlit cu comanda "streamlit run app.py"
+
 ### 🔐 Autentificare & cont
 - Creare cont nou
 - Parole securizate (hash SHA-256)
@@ -43,6 +48,8 @@ Utilizatorii își pot crea un cont, pot adăuga bani, pot cumpăra și vinde ac
 - **SQLAlchemy ORM** – definire modele & interacțiune DB
 - **Alpha Vantage API** – prețuri live
 - **Hashlib (SHA-256)** – securizarea parolelor
+- **DB Browser for SQLite** – vizualizare și inspectare bază de date
+
 
 ---
 
@@ -65,3 +72,4 @@ investment_portfolio/
 │   └── storage_services.py    # legacy JSON utils
 │
 └── investment.db              # baza de date SQLite
+
